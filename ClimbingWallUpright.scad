@@ -136,21 +136,23 @@ module overhang() {
 }
 
 module upright() {
+    upright_factor = 1.5;
+    
     // vertical beams
     for (i = [0 : 1]) {
         translate([(ply_8 + beam_2) * i, 0, 0])
             translate([-beam_2, ply_thickness - beam_8, -1])
-            beam_2x8(ply_2 + (1.5 * ply_4 * cos(angle)) + beam_6 + 1);
+            beam_2x8(ply_2 + (upright_factor * ply_4 * cos(angle)) + beam_6 + 1);
     }
     
     // horizontal beams
     for (i = [0 : 1]) {
         difference() {
             translate([(ply_8 + beam_2) * i, -2 * gap, 0])
-                translate([0, 0, ply_2 + (1.5 * ply_4 * cos(angle))])
+                translate([0, 0, ply_2 + (upright_factor * ply_4 * cos(angle))])
                 translate([-beam_2, ply_thickness - beam_8 + gap, 0])
                 rotate([90, 0, 0])
-                beam_2x6(1.5 * ply_4 * sin(angle) - beam_8 + (beam_6 * tan(angle)));
+                beam_2x6(upright_factor * ply_4 * sin(angle) - beam_8 + (beam_6 * tan(angle)));
             
             translate([-0.5, ply_thickness, ply_2])
                 rotate([angle, 0, 0])
