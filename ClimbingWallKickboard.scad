@@ -1,5 +1,6 @@
 angle = 30;
 gap = 0.001;
+board_beams = 5;
 
 ply_thickness = 0.018;
 
@@ -113,9 +114,32 @@ module overhang() {
                 floor(1);
             }
     }
+    
+    // top beam
+    translate([0, 0, ply_2])
+        rotate([angle, 0, 0])
+        translate([beam_2, ply_thickness + gap, ply_8 + gap])
+        rotate([0, 90, 0])
+        beam_2x6(ply_8 - (2 * beam_2));
+    
+    // bottom beam
+    translate([0, 0, ply_2])
+        rotate([angle, 0, 0])
+        translate([beam_2, ply_thickness + gap, beam_2])
+        rotate([0, 90, 0])
+        beam_2x6(ply_8 - (2 * beam_2));
+    
+    // middle beams
+    for (i = [1 : board_beams - 1]) {
+        translate([0, 0, ply_2 + gap])
+        rotate([angle, 0, 0])
+        translate([ply_8 * i / board_beams, ply_thickness, beam_2])
+        beam_2x4(ply_8 - (2 * beam_2));
+    }
 }
 
 module aframe() {
+    // main frame
     for (i = [0 : 1]) {
             translate([0, -gap, 0])
             translate([0, -ply_8 * sin(angle) * 2, 0])
@@ -125,6 +149,26 @@ module aframe() {
                 floor(1);
             }
     }
+
+    // 2x4s to connect to board supports
+    for (i = [0 : 1]) {
+        translate([(ply_8 + beam_2) * i, 0, 0])
+            translate([0, -ply_thickness * sin(angle), 0])
+            translate([0, beam_6 / cos(angle), 0])
+            translate([0, -1.5 * ply_4 * sin(angle), 0])
+            translate([0, 0, 1.5 * ply_4 * cos(angle)])
+            translate([-beam_2, 0, ply_2 - beam_4 / 2])
+            rotate([90, 0, 0])
+            beam_2x4(2 * ((ply_2 * sin(angle)) + (beam_6 / cos(angle))) - (beam_4 * tan(angle)) + (ply_thickness * cos(angle) / sin(angle)));
+    }
+    
+    // 2x6 to connect the legs at the base
+    translate([0, -beam_2 * tan(angle), 0])
+        translate([0, -ply_2 * tan(angle), 0])
+        translate([0, -ply_8, 0])
+        translate([beam_2, -beam_6, beam_2])
+        rotate([0, 90, 0])
+        beam_2x6(ply_8 - 2 * beam_2);
 }
 
 kickboard();
